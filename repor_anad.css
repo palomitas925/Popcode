@@ -1,0 +1,295 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #18bdff;
+  color: #333;
+}
+
+header {
+  background: #fff;
+  padding: 10px 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 20px;
+  color: #0e96cc;
+}
+
+.logout-btn {
+  background: #ff4d4d;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+header .logout-btn2,
+/* --- Alinea los dos botones del header juntos a la derecha --- */
+header .logout-btn,
+header .logout-btn3 {
+  margin-left: 10px;
+}
+
+/* --- Botón "Regresar" con el mismo estilo que "Cerrar sesión", pero azul --- */
+.logout-btn2 {
+  background-color: #00acef;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.logout-btn2:hover {
+  background-color: #00ACEF;
+}
+.logout-btn3{
+    background-color: #21b9e3;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor:pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+.logout-btn3:hover {
+    background-color: #21b9e3;
+}
+.return {
+  background-color: #1aaff5;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+main {
+  padding: 30px;
+  max-width: 1000px;
+  margin: auto;
+}
+
+.filter-group {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-container {
+  position: relative;
+}
+
+.search-container input {
+  padding: 10px 35px 10px 12px;
+  border: 2px solid #0e96cc;
+  border-radius: 8px;
+  font-size: 16px;
+  width: 300px;
+}
+
+.search-container::before {
+  content: '🔍';
+  position: absolute;
+  right: 10px;
+  font-size: 18px;
+  color: #0e96cc;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.filter-buttons button {
+  padding: 10px 16px;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #fff;
+}
+
+.btn-regresar {
+  background: #0e96cc;
+}
+
+.btn-reporte {
+  background: #078dfa;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+th,
+td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background: #0e96cc;
+  color: #fff;
+}
+
+img.product-img {
+  width: 80px;
+  border-radius: 5px;
+}
+
+.action-btn {
+  padding: 6px 12px;
+  margin: 2px;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.edit-btn {
+  background: #078dfa;
+}
+
+.delete-btn {
+  background: #ce1f1f;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background: #fff;
+  margin: 10% auto;
+  padding: 30px;
+  width: 400px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.modal-content label {
+  font-weight: bold;
+  color: #0e96cc;
+}
+
+.modal-content input,
+.modal-content select {
+  padding: 10px;
+  border: 2px solid #0e96cc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.modal-content button {
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: #0e96cc;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.modal-content button:hover {
+  background: #007bb5;
+}
+
+.logo-esquina {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  width: 80px;
+  height: auto;
+}
+
+.logo-superior {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 48px;
+  height: auto;
+}
+
+/* ======== TABLA SCROLL (vertical + horizontal) ======== */
+.tabla-scroll {
+  width: 100%;
+  max-height: 500px;      /* Altura máxima visible */
+  overflow-y: auto;       /* Scroll vertical */
+  overflow-x: auto;       /* Scroll horizontal */
+  -webkit-overflow-scrolling: touch;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+/* Encabezado fijo al hacer scroll */
+.tabla-scroll thead th {
+  position: sticky;
+  top: 0;
+  background-color: #0e96cc;
+  color: white;
+  z-index: 2;
+}
+
+/* Asegura que la tabla tenga un ancho mínimo */
+.tabla-scroll table {
+  min-width: 800px;
+}
+
+/* ======== RESPONSIVE ======== */
+@media (max-width: 900px) {
+  .contenedor {
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+  }
+
+  .panel-izquierdo,
+  .panel-derecho {
+    width: 95%;
+    flex: none;
+  }
+
+  .panel-izquierdo {
+    background: #00ADEE;
+  }
+
+  .search-container input {
+    width: 100%;
+  }
+
+  main {
+    padding: 15px;
+  }
+}

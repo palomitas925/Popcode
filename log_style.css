@@ -1,0 +1,191 @@
+body {
+  margin: 0;
+  font-family: 'LeagueNight', sans-serif;
+  background-color: #ffffff;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* === CONTENEDOR PRINCIPAL === */
+.login-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  max-width: 1100px;
+  width: 90%;
+}
+
+/* === LOGIN === */
+.login-container {
+  width: 500px;
+  text-align: center;
+}
+
+.login-container img {
+  width: 250px;
+  margin-bottom: 20px;
+}
+
+.login-container h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.login-container input {
+  width: 70%;
+  padding: 10px;
+  margin: 10px 0;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.login-container button {
+  padding: 10px 20px;
+  background-color: #0e96cc;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 75%;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.login-container button:hover {
+  background-color: #0c7fb0;
+}
+
+/* === CARRUSEL === */
+.carousel {
+  width: 800px;
+  height: 400px;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.carousel-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: none;
+}
+
+/* === MODAL === */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px 30px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 20px;
+}
+
+/* ========================================================= */
+/* === 📱 RESPONSIVE DESIGN === */
+/* ========================================================= */
+
+/* --- Tablets (menores de 992px) --- */
+@media (max-width: 992px) {
+  .login-wrapper {
+    flex-direction: column;
+    gap: 30px;
+    padding: 30px;
+  }
+
+  .login-container {
+    width: 80%;
+  }
+
+  .login-container img {
+    width: 200px;
+  }
+
+  .login-container input,
+  .login-container button {
+    width: 85%;
+  }
+
+  .carousel {
+    width: 90%;
+    height: 300px;
+  }
+}
+
+/* --- Móviles (menores de 600px) --- */
+@media (max-width: 600px) {
+  body {
+    height: auto;
+    padding: 20px;
+    align-items: flex-start;
+  }
+
+  .login-wrapper {
+    flex-direction: column;
+    width: 100%;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 20px;
+    gap: 20px;
+  }
+
+  .login-container {
+    width: 100%;
+    order: 1; /* 🔹 Login primero */
+  }
+
+  .carousel {
+    width: 100%;
+    height: 220px;
+    order: 2; /* 🔹 Carrusel debajo */
+  }
+
+  .login-container img {
+    width: 180px;
+    margin-bottom: 15px;
+  }
+
+  .login-container h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+
+  .login-container input {
+    width: 100%;
+    padding: 12px;
+    font-size: 15px;
+  }
+
+  .login-container button {
+    width: 100%;
+    padding: 12px;
+    font-size: 15px;
+  }
+
+  .modal-content {
+    width: 80%;
+    font-size: 18px;
+  }
+}

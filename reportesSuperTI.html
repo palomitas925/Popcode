@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>POP CODE - Reportes</title>
+  <link rel="stylesheet" href="/estilos.css">
+  <style>
+/* Reset básico */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #18bdff;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+/* Encabezado */
+header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff;
+  padding: 10px 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+header img {
+  height: 60px;
+  margin-right: 20px;
+}
+
+header h1 {
+  font-size: 24px;
+  color: #0e96cc;
+  margin: 0;
+  flex-grow: 1;
+}
+
+
+.return:hover {
+  background-color: #0e96cc;
+}
+
+.logout-btn {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.logout-btnn {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #007bff; /* Azul */
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  margin-left: 10px;
+}
+
+.logout-btnn:hover {
+  background-color: #0056b3; /* Azul más oscuro al pasar el mouse */
+}
+
+/* Contenido principal */
+main {
+  padding: 20px;
+  text-align: center;
+}
+
+main h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+main p {
+  font-size: 18px;
+  color: #fff;
+}
+
+/* Botones tipo dashboard */
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 30px;
+  margin-top: 40px;
+  padding: 0 200px;
+}
+
+.action-btn {
+  background-color: #ffffff;
+  border: 2px solid #0e96cc;
+  border-radius: 10px;
+  padding: 30px 10px;
+  text-decoration: none;
+  color: #000000;
+  font-weight: bold;
+  font-size: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+.action-btn span {
+  font-size: 100px;
+  margin-bottom: 10px;
+}
+
+.action-btn:hover {
+  background-color: #0e96cc;
+  color: white;
+  transform: scale(1.05);
+}
+
+/* Tarjetas */
+.card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.card h2 {
+  margin-top: 0;
+  color: #222;
+}
+
+.card p {
+  color: #555;
+}
+
+/* Footer */
+footer {
+  text-align: right;
+  padding: 10px 20px;
+}
+
+.feedback-icon {
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.logo-esquina {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  width: 80px;
+  height: auto;
+}
+
+/* Formulario */
+.form-card {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 30px;
+  max-width: 400px;
+  margin: 40px auto;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-card label {
+  font-weight: bold;
+  color: #0e96cc;
+}
+
+.form-card select,
+.form-card input,
+input[type="text"] {
+  padding: 10px;
+  border: 2px solid #0e96cc;
+  border-radius: 8px;
+  font-size: 16px;
+  width: 100%;
+  margin: 10px 0;
+}
+
+/* Resultado */
+.resultado {
+  margin-top: 15px;
+  font-weight: bold;
+  color: green;
+}
+
+/* Paneles */
+.contenedor {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  gap: 20px;
+}
+
+.panel-izquierdo,
+.panel-derecho {
+  width: 45%;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Focos */
+.focos {
+  display: flex;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.foco {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: gray;
+  border: 2px solid #ccc;
+}
+
+.foco.verde {
+  background: #28a745;
+}
+
+.foco.rojo {
+  background: #dc3545;
+}
+
+/* Botones */
+.botones button {
+  padding: 10px 20px;
+  margin-right: 10px;
+  background-color: #0e96cc;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.botones button:hover {
+  background-color: #0b7bb5;
+}
+
+/* Imagen */
+.imagen img {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  max-width: 100%;
+  height: auto;
+}
+    /* Barra de pestañas */
+    .tab-bar {
+      display: flex;
+      align-items: center;
+      background: #ffffff;
+      border-bottom: 2px solid #0e96cc;
+      padding: 0 10px;
+    }
+
+    .tab {
+      padding: 12px 20px;
+      cursor: pointer;
+      font-weight: bold;
+      color: #0e96cc;
+      border-radius: 8px 8px 0 0;
+      margin-right: 5px;
+      transition: background 0.3s ease;
+    }
+
+    .tab.active {
+      background: #0e96cc;
+      color: #fff;
+    }
+
+    .tab:hover {
+      background: #e6f7ff;
+    }
+
+    /* Botón regresar */
+    .back-btn {
+      margin-left: auto;
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .back-btn:hover {
+      background-color: #cc0000;
+    }
+
+    /* Contenedor de contenido */
+    .tab-content {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tab-pane {
+      flex-grow: 1;
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+      height: 100%;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Barra de pestañas -->
+  <div class="tab-bar">
+<img src="../imagenes/SLIMPOP.png" alt="Logo esquina" class="logo-inferior" style="width:65px; height:auto;">
+    <div class="tab active" onclick="openTab('reportes', this)">📊 Productos añadidos</div>
+    <div class="tab" onclick="openTab('escaneos', this)">📦 Productos escaneados</div>
+    <button class="back-btn" onclick="location.href='/MainSuperTI.php'">⬅ Regresar</button>
+  </div>
+
+  <!-- Contenido -->
+  <div class="tab-content">
+    <div id="reportes" class="tab-pane active">
+      <iframe src="/reportesVV_SuperTI.php"></iframe>
+    </div>
+    <div id="escaneos" class="tab-pane">
+      <iframe src="/registro_escaneosVV_SuperTI.php"></iframe>
+    </div>
+  </div>
+
+  <script>
+    function openTab(tabId, element) {
+      // Ocultar todas las pestañas
+      document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+
+      // Mostrar la seleccionada
+      document.getElementById(tabId).classList.add('active');
+      element.classList.add('active');
+    }
+  </script>
+</body>
+</html>

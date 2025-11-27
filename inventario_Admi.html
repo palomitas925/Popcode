@@ -1,0 +1,1730 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POP CODE - Inventarios</title>
+    <link rel="stylesheet" href="styleInv.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f8ff;
+            color: #333;
+            overflow-x: hidden;
+            display: flex;
+        }
+
+        header {
+            background: #fff;
+            padding: 12px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            width: 100%;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 20px;
+            color: #0e96cc;
+        }
+
+        .logout-btn {
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .logo-inferior {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            width: 80px;
+            height: auto;
+            z-index: 999;
+            opacity: 0.9;
+        }
+
+        .logo-esquina {
+            width: 100px;
+            /* Ajusta el tamaño deseado */
+            height: auto;
+            /* Mantiene la proporción */
+            position: absolute;
+            /*  se mantiene en una esquina */
+            top: 10px;
+            left: 10px;
+        }
+
+        /* map nav to .sidebar */
+        .sidebar {
+            background: #fff;
+            width: 230px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            padding-top: 70px;
+            box-sizing: border-box;
+            border-right: 1px solid rgba(0, 0, 0, 0.06);
+            background: linear-gradient(180deg, #0e96cc 0%, #f7fbff 100%)
+        }
+
+        .sidebar h2 {
+            padding: 0 15px;
+            color: #e6f5ff;
+            ;
+        }
+
+        .sidebar button {
+            width: calc(100% - 30px);
+            margin: 10px 15px;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0 10px 20px 10px;
+            margin: 0;
+        }
+
+        nav ul li {
+            margin: 1px 0;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #0e96cc;
+            font-weight: 700;
+            display: block;
+            padding: 5px 9px;
+            border-radius: 15px;
+            font-size: 15px;
+        }
+
+        nav ul li a:hover {
+            background: #e6f5ff;
+        }
+
+        .submenu>a::after {
+            content: " ▼";
+            font-size: 11px;
+        }
+
+        .children {
+            display: none;
+            margin-left: 10px;
+            margin-top: 10px;
+        }
+
+        /* keep inv item styles for functionality */
+        .inv-item {
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .inv-header {
+            padding: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #ffffff;
+        }
+
+        .inv-header:hover {
+            background: #0e96cc;
+        }
+
+        .inv-sublist {
+            display: none;
+            padding: 8px 12px 12px 12px;
+        }
+
+        .caret {
+            transition: transform 0.2s ease;
+            color: #ffffff;
+        }
+
+        .caret.open {
+            transform: rotate(90deg);
+        }
+
+        .inv-sublist .category-item {
+            color: #ffffff;
+            margin-bottom: 6px;
+            cursor: pointer;
+        }
+
+        /* map main to .content */
+        .content {
+            flex: 1;
+            padding: 25px;
+            margin-left: 230px;
+        }
+
+        table {
+            border-collapse: collapse;
+            background: #fff;
+            margin-top: 10px;
+            min-width: fit-content;
+        }
+
+        table th,
+        table td {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+            font-size: 13px;
+            white-space: nowrap;
+            min-width: 80px;
+        }
+
+        table th {
+            background: #0e96cc;
+            color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            font-weight: 600;
+        }
+
+        table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        /* CONTENEDOR CON SCROLL HORIZONTAL Y VERTICAL - FUNCIONAL */
+        .table-container {
+            max-height: 70vh;
+            overflow: auto;
+  /*          overflow-x: auto;             */
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            margin-top: 10px;
+            -webkit-overflow-scrolling: touch;
+            display: block;
+        }
+
+        /* Asegurar que tabla se expanda correctamente */
+        .table-container table {
+            width: max-content;
+            min-width: fit-content;
+            margin: 0;
+        }
+
+        /* Scrollbar estilos WEBKIT - VERTICAL Y HORIZONTAL */
+        .table-container::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: #0e96cc;
+            border-radius: 6px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #0978a5;
+        }
+
+        .table-container::-webkit-scrollbar-corner {
+            background: #f1f1f1;
+        }
+
+        /* Asegurar que la tabla dentro del contenedor se expanda si es necesaria */
+        #tablaContainer table {
+            width: 100%;
+            margin: 0;
+        }
+
+        /* Scroll del historial - MEJORADO con estilos consistentes */
+        #historialBody {
+            max-height: 60vh;
+            overflow: auto;
+            display: block;
+        }
+
+        #historialBody table {
+            width: auto;
+            min-width: 100%;
+        }
+
+        #historialBody::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+        }
+
+        #historialBody::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        #historialBody::-webkit-scrollbar-thumb {
+            background: #0e96cc;
+            border-radius: 6px;
+        }
+
+        #historialBody::-webkit-scrollbar-thumb:hover {
+            background: #0978a5;
+        }
+
+        #historialBody::-webkit-scrollbar-corner {
+            background: #f1f1f1;
+        }
+
+        .actions button {
+            margin-right: 5px;
+        }
+
+        .menu-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 210px;
+            background: #0e96cc;
+            border-top: 1px solid #ccc;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .menu-footer button {
+            background: #0e96cc;
+            color: #0e96cc;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .menu-footer button:hover {
+            background: #0978a5;
+        }
+
+        /* Hover azul para el botón regresar (en vez de verse blanco) */
+        #btnRegresar:hover {
+            background: #0e96cc !important;
+            color: #fff !important;
+        }
+
+        /* Clase para colapsar la sidebar dejando 40px visible como "handle" */
+        .sidebar.collapsed {
+            transform: translateX(calc(-100% + 40px));
+            transition: transform 0.25s ease;
+        }
+
+        .content.expanded {
+            margin-left: 40px;
+            transition: margin-left 0.25s ease;
+        }
+
+        /* Ajustes del botón toggle cuando la sidebar está colapsada */
+        #toggleSidebar {
+            white-space: nowrap;
+            transition: width 0.18s ease;
+        }
+
+        .sidebar.collapsed #toggleSidebar {
+            width: 36px;
+            padding: 6px;
+            overflow: hidden;
+        }
+
+        /* Asegurar que el footer (botón regresar) quede visible en el borde */
+        .menu-footer {
+            left: 0;
+        }
+
+        /* Visual indicators: badges for counts and missing identifier */
+        .badge {
+            display: inline-block;
+            background: #f0f8ff;
+            color: #0e96cc;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+
+        .badge.missing {
+            background: #ff4d4d;
+        }
+
+        .test-harness button {
+            background: #0e96cc;
+            color: #fff;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .test-harness button:hover {
+            opacity: 0.9;
+        }
+
+        /* Modal (enhanced behavior) */
+        .modal {
+            display: none;
+            position: fixed !important;
+            inset: 0 !important;
+            background: rgba(3, 10, 18, 0.55);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999 !important;
+        }
+
+        .modal-content {
+            background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+            padding: 18px;
+            border-radius: 14px;
+            width: 480px;
+            max-width: calc(100% - 32px);
+            box-shadow: 0 20px 50px rgba(7, 20, 40, 0.15);
+            border: 1px solid rgba(14, 150, 204, 0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            padding-bottom: 8px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            color: #0e96cc;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 6px;
+            border-radius: 6px;
+        }
+
+        .modal-close:hover {
+            background: rgba(14, 150, 204, 0.06);
+            color: #0b6f9b;
+        }
+
+        .modal-body {
+            padding-top: 6px;
+            display: block;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            padding-top: 6px;
+            border-top: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        .btn-primary {
+            background: #0e96cc;
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #111827;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        @media (max-width:520px) {
+            .modal-content {
+                width: 95%;
+                padding: 12px;
+                border-radius: 10px;
+            }
+        }
+
+        /* boton regresar más visible en mobile */
+        @media (max-width: 700px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                margin-bottom: 12px;
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+<a href="../MainAdmin.php">
+        <img src="../imagenes/slimpop-blanca.png" alt="Logo esquina" class="logo-esquina"
+            style="width:65px; height:auto;">
+<a>
+        <img src="../imagenes/carita_feliz_azul.png" alt="Logo inferior" class="logo-inferior">
+
+        <!-- moved: crear nuevo inventario arriba del título -->
+        <button id="btnNuevoInventario"
+            style="margin: 12px 15px; width: calc(100% - 30px); font-weight:700; background:#0e96cc; color:#fff; border-radius:8px;">+
+            Crear nuevo inventario</button>
+
+        <!-- Toggle para ocultar/mostrar la barra de navegación -->
+        <button id="toggleSidebar" title="Ocultar barra"
+            style="margin: 6px 15px 0 15px; width: calc(100% - 30px); padding:6px; border-radius:6px; background:#fff; border:1px solid #ddd; cursor:pointer">⇤
+            Ocultar barra</button>
+        <h2>Inventarios</h2>
+        <div id="inventory-list"></div>
+
+        <!-- Nuevo botón de regresar (fijo en la parte inferior) -->
+        <div class="menu-footer">
+            <button id="btnRegresar" style="background: #ffffff; width: 80%;">← Regresar</button>
+        </div>
+    </div>
+
+    <div class="content">
+        <h2 id="tituloInventario">Selecciona o crea un inventario</h2>
+        <div id="tablaContainer"></div>
+    </div>
+    </div> <!-- end wrapper div to clean up structure -->
+
+    <!-- Modales al final del body, al mismo nivel que el contenido principal -->
+    <div class="modal" id="modalInventario" style="z-index:9999;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Nuevo Inventario</h3>
+                <button class="modal-close" data-close="modalInventario" aria-label="Cerrar">×</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="nombreInventario" placeholder="Nombre del inventario">
+                <input type="text" id="identificadorInventario"
+                    placeholder="Campo identificador (ej: No.Serie, Clave, Codigo de barras... etc)">
+                <input type="text" id="categoriaInventario" placeholder="Categoría (opcional)">
+                <textarea id="camposInventario"
+                    placeholder="Campos incluye el identificador (separados por comas)"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" data-close="modalInventario">Cancelar</button>
+                <button class="btn-primary" id="crearInventario">Crear</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modalEditar" style="z-index:9999;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Editar Registro</h3>
+                <button class="modal-close" data-close="modalEditar" aria-label="Cerrar">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="editarCampos"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelarEdicion">Cancelar</button>
+                <button class="btn-primary" id="guardarEdicion">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modalNuevoRegistro" style="z-index:9999;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Nuevo Registro</h3>
+                <button class="modal-close" data-close="modalNuevoRegistro" aria-label="Cerrar">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="nuevoCampos"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelarNuevo">Cancelar</button>
+                <button class="btn-primary" id="guardarNuevo">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modalPrint" style="z-index:9999;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Imprimir etiqueta</h3>
+                <button class="modal-close" data-close="modalPrint" aria-label="Cerrar">×</button>
+            </div>
+            <div class="modal-body" id="printArea"
+                style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:6px;">
+                <!-- barcode SVG and label will be injected here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="closePrint">Cerrar</button>
+                <button class="btn-primary" id="doPrint">Imprimir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Retiro -->
+    <div class="modal" id="modalRetiro">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Registrar Retiro</h3>
+                <button class="modal-close" data-close="modalRetiro" aria-label="Cerrar">×</button>
+            </div>
+            <div class="modal-body">
+                <label>Código de retiro (se generará):</label>
+                <input type="text" id="retiro_codigo" disabled>
+                <label>Fecha de retiro:</label>
+                <input type="text" id="retiro_fecha" disabled>
+                <label>No. colaborador:</label>
+                <input type="text" id="retiro_colaborador">
+                <label>Cantidad:</label>
+                <input type="number" id="retiro_cantidad" min="1">
+                <label>Observaciones:</label>
+                <textarea id="retiro_observaciones"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" data-close="modalRetiro">Cancelar</button>
+                <button class="btn-primary" id="guardarRetiro">Registrar retiro</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Devolución -->
+    <div class="modal" id="modalDevolucion">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Registrar Devolución</h3>
+                <button class="modal-close" data-close="modalDevolucion" aria-label="Cerrar">×</button>
+            </div>
+            <div class="modal-body">
+                <label>Código de retiro:</label>
+                <div style="display:flex; gap:8px;"><input type="text" id="devol_codigo"><button
+                        id="buscarDevol">Buscar</button></div>
+                <label>Fecha de retiro (original):</label>
+                <input type="text" id="devol_fecha_retiro" disabled>
+                <label>Fecha de devolución:</label>
+                <input type="datetime-local" id="devol_fecha_devolucion">
+                <label>No. colaborador:</label>
+                <input type="text" id="devol_colaborador" disabled>
+                <label>Inventario / Categoría:</label>
+                <input type="text" id="devol_inventario" disabled>
+                <label>Artículo (ID):</label>
+                <input type="text" id="devol_articulo_id" disabled>
+                <label>Cantidad (por defecto: la del retiro):</label>
+                <input type="number" id="devol_cantidad" min="1">
+                <label>Observaciones:</label>
+                <textarea id="devol_observaciones"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" data-close="modalDevolucion">Cancelar</button>
+                <button class="btn-primary" id="guardarDevolucion">Registrar devolución</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Historial -->
+    <div class="modal" id="modalHistorial">
+        <div class="modal-content" style="width:90%; max-width:1200px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Historial de Retiros y Devoluciones</h3>
+                <button class="modal-close" data-close="modalHistorial" aria-label="Cerrar">×</button>
+            </div>
+            <div class="modal-body" id="historialBody" style="max-height:60vh; overflow:auto;">
+                <!-- tabla historial se inyectará aquí -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" data-close="modalHistorial">Cerrar</button>
+                <button class="btn-primary" id="printHistorial">Imprimir</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script>
+        const lista = document.getElementById('inventory-list');
+        const modal = document.getElementById('modalInventario');
+        const btnNuevo = document.getElementById('btnNuevoInventario');
+        const crearBtn = document.getElementById('crearInventario');
+        const contenedor = document.getElementById('tablaContainer');
+        const modalEditar = document.getElementById('modalEditar');
+        const editarCamposDiv = document.getElementById('editarCampos');
+        const btnGuardarEdicion = document.getElementById('guardarEdicion');
+        const btnCancelarEdicion = document.getElementById('cancelarEdicion');
+        const modalNuevoRegistro = document.getElementById('modalNuevoRegistro');
+        const nuevoCamposDiv = document.getElementById('nuevoCampos');
+        const btnGuardarNuevo = document.getElementById('guardarNuevo');
+        const btnCancelarNuevo = document.getElementById('cancelarNuevo');
+        const modalPrint = document.getElementById('modalPrint');
+        const printArea = document.getElementById('printArea');
+        const btnDoPrint = document.getElementById('doPrint');
+        const btnClosePrint = document.getElementById('closePrint');
+
+        let inventarios = [];
+        let categorias = {};
+        let registros = {};
+        let contextoEdicion = null;
+        let contextoNuevo = null;
+        let contextoActual = { id_inventario: null, id_categoria: null, catNombre: null };
+
+        // Función escapeHtml
+        function escapeHtml(str) {
+            return String(str || '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]);
+        }
+
+        // Buscar un registro por su id (articulo_id) recorriendo los registros cargados
+        function findRecordAndInventoryByArticuloId(articuloId) {
+            for (const inv of inventarios) {
+                const cats = categorias[inv.id] || [];
+                for (const cat of cats) {
+                    const rows = registros[cat.id] || [];
+                    const found = rows.find(r => String(r.id) === String(articuloId) || r.id === articuloId);
+                    if (found) return { record: found, inventory: inv, categoryId: cat.id };
+                }
+            }
+            // fallback: buscar en todos los arrays si categorias no está sincronizado
+            for (const catId in registros) {
+                const rows = registros[catId] || [];
+                const found = rows.find(r => String(r.id) === String(articuloId) || r.id === articuloId);
+                if (found) {
+                    // intentar encontrar inventario que contenga esta categoria
+                    for (const inv of inventarios) {
+                        const cats = categorias[inv.id] || [];
+                        if (cats.find(c => String(c.id) === String(catId))) return { record: found, inventory: inv, categoryId: catId };
+                    }
+                    return { record: found, inventory: null, categoryId: catId };
+                }
+            }
+            return null;
+        }
+
+        // Obtener el identificador de un registro: primer campo que no sea 'id' ni 'Cantidad'
+        function getRecordIdentifier(record, inv) {
+            if (!record || !inv) return '';
+            // Si existe el campo identificador del inventario, devolverlo
+            if (inv.identificador && String(record[inv.identificador]).trim() !== '') {
+                return String(record[inv.identificador]);
+            }
+            // Fallback: primer campo no-id y no-cantidad
+            const vals = Object.entries(record).filter(([k, v]) => k !== 'id' && String(k).toLowerCase() !== 'cantidad' && String(v).trim() !== '');
+            if (vals.length) return String(vals[0][1]);
+            return '';
+        }
+
+        // API function
+        async function api(action, data = {}) {
+            try {
+                const formData = new FormData();
+                formData.append('action', action);
+                Object.entries(data).forEach(([key, value]) => {
+                    if (typeof value === 'object') {
+                        formData.append(key, JSON.stringify(value));
+                    } else {
+                        formData.append(key, value);
+                    }
+                });
+
+                const response = await fetch('api.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const txt = await response.text().catch(() => null);
+                    const msg = `HTTP ${response.status}` + (txt ? ` — ${txt.substring(0, 400)}` : '');
+                    throw new Error(msg);
+                }
+
+                const text = await response.text();
+                let result;
+                try {
+                    result = text ? JSON.parse(text) : {};
+                } catch (e) {
+                    throw new Error('API no devolvió JSON válido');
+                }
+
+                if (result.error) throw new Error(result.error);
+                return result;
+            } catch (error) {
+                console.error(`API Error (${action}):`, error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de API',
+                    text: error.message || 'Error desconocido'
+                });
+                throw error;
+            }
+        }
+
+        // Cargar datos iniciales
+        async function cargarDatos() {
+            try {
+                const result = await api('getInventarios');
+                if (Array.isArray(result)) inventarios = result;
+                else if (Array.isArray(result.inventarios)) inventarios = result.inventarios;
+                else inventarios = [];
+                await renderSidebar();
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+            }
+        }
+
+        // Renderizar sidebar
+        async function renderSidebar() {
+            lista.innerHTML = '';
+            for (const inv of inventarios) {
+                const item = document.createElement('div');
+                item.className = 'inv-item';
+
+                const header = document.createElement('div');
+                header.className = 'inv-header';
+                header.textContent = inv.nombre;
+
+                const caret = document.createElement('span');
+                caret.className = 'caret';
+                caret.textContent = '▶️';
+                header.appendChild(caret);
+
+                const sub = document.createElement('div');
+                sub.className = 'inv-sublist';
+
+                if (!categorias[inv.id]) {
+                    try {
+                        categorias[inv.id] = await api('getCategorias', { id_inventario: inv.id }) || [];
+                    } catch (error) {
+                        categorias[inv.id] = [];
+                    }
+                }
+
+                for (const cat of categorias[inv.id]) {
+                    const div = document.createElement('div');
+                    div.className = 'category-item';
+
+                    if (!registros[cat.id]) {
+                        try {
+                            registros[cat.id] = await api('getRegistros', { id_categoria: cat.id }) || [];
+                        } catch (error) {
+                            registros[cat.id] = [];
+                        }
+                    }
+
+                    const count = Array.isArray(registros[cat.id]) ? registros[cat.id].length : 0;
+                    div.innerHTML = `${escapeHtml(cat.nombre)} <span class="badge">${count}</span>`;
+                    div.onclick = (e) => {
+                        e.stopPropagation();
+                        mostrarInventario(inv.id, cat.id, cat.nombre);
+                    };
+                    sub.appendChild(div);
+                }
+
+                header.onclick = () => {
+                    const isOpen = sub.style.display === 'block';
+                    const others = lista.querySelectorAll('.inv-sublist');
+                    const carets = lista.querySelectorAll('.caret');
+                    others.forEach(o => o.style.display = 'none');
+                    carets.forEach(c => c.classList.remove('open'));
+
+                    if (!isOpen) {
+                        sub.style.display = 'block';
+                        caret.classList.add('open');
+                    } else {
+                        sub.style.display = 'none';
+                        caret.classList.remove('open');
+                    }
+                };
+
+                item.appendChild(header);
+                item.appendChild(sub);
+                lista.appendChild(item);
+            }
+        }
+
+        // Mostrar inventario
+        async function mostrarInventario(id_inventario, id_categoria, catNombre) {
+            try {
+                contextoActual = { id_inventario, id_categoria, catNombre };
+                registros[id_categoria] = await api('getRegistros', { id_categoria }) || [];
+                const inv = inventarios.find(i => i.id === id_inventario);
+                if (!inv) throw new Error('Inventario no encontrado');
+                const title = `${inv.nombre} — ${catNombre}`;
+                document.getElementById('tituloInventario').textContent = title;
+
+                let camposCat = [];
+                try {
+                    camposCat = await api('getCampos', { id_categoria }) || [];
+                } catch (error) {
+                    camposCat = [];
+                }
+                let columns = camposCat.map(c => c.nombre);
+
+                // Reordenar columnas: GARANTIZAR orden correcto
+                // 1. Identificador primero
+                // 2. Cantidad segundo
+                // 3. Resto después
+                const identificador = inv.identificador || '';
+
+                // Remover identificador y Cantidad del array
+                let columnasResto = columns.filter(c => {
+                    const cLower = String(c).toLowerCase();
+                    const idLower = String(identificador).toLowerCase();
+                    return cLower !== idLower && cLower !== 'cantidad';
+                });
+
+                // Construir en orden correcto
+                let columnasOrdenadas = [];
+                if (identificador) columnasOrdenadas.push(identificador);
+                columnasOrdenadas.push('Cantidad');
+                columnasOrdenadas = columnasOrdenadas.concat(columnasResto);
+
+                columns = columnasOrdenadas;
+
+                // Botón nuevo registro arriba de la tabla
+                let html = `
+            <div style="margin-bottom: 10px;">
+                <button id="btnNuevoRegistroArriba" style="padding:8px 12px;background:#0e96cc;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;">+ Nuevo registro</button>
+            </div>
+            <div class="actions-panel" style="margin-bottom: 16px; display: flex; gap: 8px; align-items: center;">
+                <button id="btnSeleccionarTodos" style="padding: 6px 12px; background:#0e96cc; color:#fff; border:none; border-radius:6px; cursor:pointer;">Seleccionar todos</button>
+                <button disabled id="btnEditar" style="padding: 6px 12px; background:#999; color:#fff; border:none; border-radius:6px; cursor:pointer;">✏️ Editar</button>
+                <button disabled id="btnEliminar" style="padding: 6px 12px; background:#999; color:#fff; border:none; border-radius:6px; cursor:pointer;">🗑️ Eliminar</button>
+                <button disabled id="btnTicket" style="padding: 6px 12px; background:#999; color:#fff; border:none; border-radius:6px; cursor:pointer;">🎫 Ticket</button>
+                <button disabled id="btnRetirar" style="padding: 6px 12px; background:#2b8a3e; color:#fff; border:none; border-radius:6px; cursor:pointer;">🔻 Retirar</button>
+                <button id="btnDevolver" style="padding: 6px 12px; background:#6b5bd6; color:#fff; border:none; border-radius:6px; cursor:pointer;">🔺 Devolver</button>
+                <!-- Campo de búsqueda: busca dentro de los datos del registro -->
+                <button id="btnHistorial" style="padding: 6px 12px; background:#0e96cc; color:#fff; border:none; border-radius:6px; cursor:pointer;">📜 Historial</button>
+                <input id="busquedaDatos" type="search" placeholder="Buscar en datos..." style="padding:6px 10px; border:1px solid #ddd; border-radius:6px; width:240px;">🔍
+                <span id="selectionCount" style="margin-left: 8px; color: #666;"></span>
+            </div>
+            
+            <div class="table-container">
+                <table><thead><tr><th>✔</th>`;
+                columns.forEach(c => html += `<th>${escapeHtml(c)}</th>`);
+                html += `</tr></thead><tbody>`;
+
+                const rows = registros[id_categoria] || [];
+                rows.forEach((r, i) => {
+                    html += `<tr data-index="${i}" data-id="${r.id || i}">
+                <td><input type='checkbox' class='row-selector' data-index="${i}" data-id="${r.id || i}"></td>`;
+                    columns.forEach(c => html += `<td>${escapeHtml(r[c] || '')}</td>`);
+                    html += `</tr>`;
+                });
+                html += `</tbody></table>
+            </div>`;
+
+                contenedor.innerHTML = html;
+
+                // Listener para el botón nuevo registro arriba
+                document.getElementById('btnNuevoRegistroArriba').onclick = () => nuevoRegistro(id_inventario, id_categoria, columns);
+
+                setupTableControls(id_inventario, id_categoria, columns);
+            } catch (error) {
+                console.error('Error mostrando inventario:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message || 'Error desconocido'
+                });
+            }
+        }
+
+        // Setup table controls
+        function setupTableControls(id_inventario, id_categoria, columns) {
+            const checkboxes = document.querySelectorAll('.row-selector');
+            const btnEditar = document.getElementById('btnEditar');
+            const btnEliminar = document.getElementById('btnEliminar');
+            const btnTicket = document.getElementById('btnTicket');
+            const btnSeleccionarTodos = document.getElementById('btnSeleccionarTodos');
+            const selectionCount = document.getElementById('selectionCount');
+            const btnRetirar = document.getElementById('btnRetirar');
+            const btnDevolver = document.getElementById('btnDevolver');
+            const btnHistorial = document.getElementById('btnHistorial');
+
+            const updateButtonStates = () => {
+                const checked = Array.from(checkboxes).filter(cb => cb.checked);
+                const hasSelection = checked.length > 0;
+                const isSingleSelection = checked.length === 1;
+
+                btnEditar.disabled = !isSingleSelection;
+                btnEditar.style.background = isSingleSelection ? '#0e96cc' : '#999';
+                btnEliminar.disabled = !hasSelection;
+                btnEliminar.style.background = hasSelection ? '#ff4d4d' : '#999';
+                btnTicket.disabled = !isSingleSelection;
+                btnTicket.style.background = isSingleSelection ? '#ffa500' : '#999';
+                if (btnRetirar) {
+                    btnRetirar.disabled = !isSingleSelection;
+                    btnRetirar.style.background = isSingleSelection ? '#2b8a3e' : '#999';
+                }
+                if (btnDevolver) {
+                    // devolver se puede abrir sin selección (buscar por código)
+                    btnDevolver.disabled = false;
+                    btnDevolver.style.background = '#6b5bd6';
+                }
+                if (btnHistorial) {
+                    btnHistorial.disabled = false;
+                    btnHistorial.style.background = '#0e96cc';
+                }
+
+                selectionCount.textContent = checked.length > 0 ? `${checked.length} seleccionado(s)` : '';
+            };
+
+            // Búsqueda en datos: filtra las filas por término dentro del objeto registro (incluye campo 'datos' si existe)
+            const searchInput = document.getElementById('busquedaDatos');
+            if (searchInput) {
+                const doFilter = () => {
+                    const q = String(searchInput.value || '').trim().toLowerCase();
+                    const tbody = contenedor.querySelector('tbody');
+                    if (!tbody) return;
+                    const rowsEls = Array.from(tbody.querySelectorAll('tr'));
+                    let anyVisible = false;
+                    rowsEls.forEach(row => {
+                        const idx = row.dataset.index;
+                        const rec = (registros[id_categoria] || [])[parseInt(idx)];
+                        let hay = false;
+                        if (!q) {
+                            hay = true;
+                        } else {
+                            // buscar dentro de la representación JSON del registro y en el texto de las celdas
+                            const recStr = rec ? JSON.stringify(rec).toLowerCase() : '';
+                            const cellText = (row.textContent || '').toLowerCase();
+                            hay = (recStr + ' ' + cellText).includes(q);
+                        }
+                        row.style.display = hay ? '' : 'none';
+                        if (hay) anyVisible = true;
+                    });
+                    // Si ninguna fila visible, podríamos mostrar un mensaje simple
+                    const noResultId = 'noSearchResultsMsg';
+                    let msgEl = document.getElementById(noResultId);
+                    if (!anyVisible) {
+                        if (!msgEl) {
+                            msgEl = document.createElement('div');
+                            msgEl.id = noResultId;
+                            msgEl.style.padding = '10px';
+                            msgEl.style.color = '#666';
+                            msgEl.textContent = 'No se encontraron resultados para la búsqueda.';
+                            contenedor.appendChild(msgEl);
+                        }
+                    } else {
+                        if (msgEl) msgEl.remove();
+                    }
+                };
+
+                searchInput.addEventListener('input', doFilter);
+                // Enter: desplazar al primer resultado
+                searchInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        const tbody = contenedor.querySelector('tbody');
+                        if (!tbody) return;
+                        const first = Array.from(tbody.querySelectorAll('tr')).find(r => r.style.display !== 'none');
+                        if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                });
+            }
+
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', updateButtonStates);
+            });
+
+            btnSeleccionarTodos.addEventListener('click', () => {
+                const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+                checkboxes.forEach(cb => cb.checked = !allChecked);
+                updateButtonStates();
+            });
+
+            btnEditar.addEventListener('click', () => {
+                const checked = Array.from(checkboxes).find(cb => cb.checked);
+                if (!checked) return;
+                const index = parseInt(checked.dataset.index);
+                const id_registro = parseInt(checked.dataset.id);
+                editarRegistroUI(id_inventario, id_categoria, index, id_registro, columns);
+            });
+
+            btnEliminar.addEventListener('click', async () => {
+                const checked = Array.from(checkboxes).filter(cb => cb.checked);
+                if (checked.length === 0) return;
+
+                const confirm = await Swal.fire({
+                    icon: 'warning',
+                    title: '¿Eliminar registros?',
+                    text: `Se eliminarán ${checked.length} registro(s).`,
+                    showCancelButton: true,
+                    confirmButtonText: 'Eliminar',
+                    cancelButtonText: 'Cancelar'
+                });
+
+                if (confirm.isConfirmed) {
+                    for (const cb of checked) {
+                        const id_registro = parseInt(cb.dataset.id);
+                        try {
+                            await api('eliminarRegistro', { id_registro });
+                        } catch (e) {
+                            console.error('Error:', e);
+                        }
+                    }
+                    await mostrarInventario(id_inventario, id_categoria, contextoActual.catNombre);
+                    Swal.fire({ icon: 'success', title: 'Eliminado', timer: 1000, showConfirmButton: false });
+                }
+            });
+
+            btnTicket.addEventListener('click', () => {
+                const checked = Array.from(checkboxes).find(cb => cb.checked);
+                if (!checked) return;
+                const index = parseInt(checked.dataset.index);
+                const rows = registros[id_categoria] || [];
+                imprimirTicketDesdeRegistro(rows[index]);
+            });
+
+            // Retirar: abrir modal con datos del registro seleccionado
+            if (btnRetirar) {
+                btnRetirar.addEventListener('click', () => {
+                    const checked = Array.from(checkboxes).find(cb => cb.checked);
+                    if (!checked) return;
+                    const index = parseInt(checked.dataset.index);
+                    const rows = registros[id_categoria] || [];
+                    const reg = rows[index] || {};
+                    // preparar modalRetiro
+                    document.getElementById('retiro_codigo').value = '';
+                    const now = new Date();
+                    document.getElementById('retiro_fecha').value = now.toLocaleString();
+                    document.getElementById('retiro_colaborador').value = '';
+                    // intentar prefijar cantidad si existe campo 'Cantidad' y establecer máximo
+                    const cantFieldName = columns.find(c => c.toLowerCase() === 'cantidad');
+                    const prefCantRaw = cantFieldName ? (reg[cantFieldName] || '') : '';
+                    // extraer primer número disponible (ej: '3' o '3 - 1')
+                    let disponibleNum = 0;
+                    if (prefCantRaw !== '') {
+                        const m = String(prefCantRaw).match(/(\d+)/);
+                        if (m) disponibleNum = parseInt(m[1]);
+                    }
+                    const retiroCantidadEl = document.getElementById('retiro_cantidad');
+                    retiroCantidadEl.value = '';
+                    retiroCantidadEl.placeholder = disponibleNum > 0 ? ('Disponibles: ' + disponibleNum) : '';
+                    retiroCantidadEl.max = disponibleNum;
+                    document.getElementById('retiro_observaciones').value = '';
+                    // almacenar referencia en el modal DOM
+                    const _modalRet = document.getElementById('modalRetiro');
+                    _modalRet.style.display = 'flex';
+                    // guardar atributos en dataset para usar al enviar
+                    _modalRet.dataset.id_categoria = id_categoria;
+                    _modalRet.dataset.articulo_id = reg.id || '';
+                });
+            }
+
+            // Devolver: abre modal para ingresar código de retiro
+            if (btnDevolver) {
+                btnDevolver.addEventListener('click', () => {
+                    document.getElementById('devol_codigo').value = '';
+                    document.getElementById('devol_fecha_retiro').value = '';
+                    document.getElementById('devol_fecha_devolucion').value = new Date().toISOString().slice(0, 16);
+                    document.getElementById('devol_colaborador').value = '';
+                    document.getElementById('devol_inventario').value = '';
+                    document.getElementById('devol_articulo_id').value = '';
+                    document.getElementById('devol_cantidad').value = '';
+                    document.getElementById('devol_observaciones').value = '';
+                    document.getElementById('modalDevolucion').style.display = 'flex';
+                });
+            }
+
+            // Historial: mostrar modal con listado
+            if (btnHistorial) {
+                btnHistorial.addEventListener('click', async () => {
+                    try {
+                        const rows = await api('get_historial');
+                        const container = document.getElementById('historialBody');
+                        let html = '<table><thead><tr><th>Fecha</th><th>Operación</th><th>Código</th><th>No. colaborador</th><th>Inventario</th><th>Categoría</th><th>Artículo ID</th><th>Cantidad</th><th>Observaciones</th></tr></thead><tbody>';
+                        rows.forEach(r => {
+                            html += `<tr><td>${escapeHtml(r.fecha_operacion)}</td><td>${escapeHtml(r.operacion)}</td><td>${escapeHtml(r.codigo_retiro)}</td><td>${escapeHtml(r.no_colaborador)}</td><td>${escapeHtml(r.inventario)}</td><td>${escapeHtml(r.categoria)}</td><td>${escapeHtml(r.articulo_id)}</td><td>${escapeHtml(r.cantidad)}</td><td>${escapeHtml(r.observaciones)}</td></tr>`;
+                        });
+                        html += '</tbody></table>';
+                        container.innerHTML = html;
+                        document.getElementById('modalHistorial').style.display = 'flex';
+                    } catch (e) {
+                        console.error(e);
+                    }
+                });
+            }
+
+            updateButtonStates();
+        }
+
+        function nuevoRegistro(id_inventario, id_categoria, columns) {
+            nuevoCamposDiv.innerHTML = '';
+            columns.forEach(c => {
+                const label = document.createElement('label');
+                label.textContent = c;
+                label.style.display = 'block';
+                label.style.marginTop = '8px';
+                label.style.fontWeight = 'bold';
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.name = c;
+                input.value = '';
+                input.style.marginTop = '4px';
+                input.style.padding = '8px';
+                input.style.width = '100%';
+                input.style.border = '1px solid #ddd';
+                input.style.borderRadius = '4px';
+                input.style.boxSizing = 'border-box';
+                nuevoCamposDiv.appendChild(label);
+                nuevoCamposDiv.appendChild(input);
+            });
+            contextoNuevo = { id_inventario, id_categoria, columns };
+            modalNuevoRegistro.style.display = 'flex';
+        }
+
+        // Guardar nuevo registro
+        btnGuardarNuevo.onclick = async () => {
+            if (!contextoNuevo) return;
+            const { id_inventario, id_categoria, columns } = contextoNuevo;
+
+            const inputs = nuevoCamposDiv.querySelectorAll('input[name]');
+            const datos = {};
+            inputs.forEach(inp => datos[inp.name] = inp.value);
+
+            try {
+                const res = await api('crearRegistro', { id_categoria, datos });
+
+                if (!registros[id_categoria]) registros[id_categoria] = [];
+                registros[id_categoria].push(Object.assign({ id: res.id_registro }, datos));
+
+                contextoNuevo = null;
+                modalNuevoRegistro.style.display = 'none';
+
+                await mostrarInventario(id_inventario, id_categoria, contextoActual.catNombre);
+                Swal.fire({ icon: 'success', title: 'Registro creado', timer: 1000, showConfirmButton: false });
+            } catch (err) {
+                console.error('Error:', err);
+            }
+        };
+
+        btnCancelarNuevo.onclick = () => {
+            contextoNuevo = null;
+            modalNuevoRegistro.style.display = 'none';
+        };
+
+        // Editar registro UI
+        function editarRegistroUI(id_inventario, id_categoria, index, id_registro, columns) {
+            const rows = registros[id_categoria] || [];
+            const reg = rows[index] || {};
+
+            editarCamposDiv.innerHTML = '';
+            columns.forEach(c => {
+                const label = document.createElement('label');
+                label.textContent = c;
+                label.style.display = 'block';
+                label.style.marginTop = '8px';
+                label.style.fontWeight = 'bold';
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.name = c;
+                // Si el campo es 'Cantidad' y tiene formato "X - Y" mostrar solo la parte de stock (X) para editar
+                let rawVal = reg[c] || '';
+                if (c.toLowerCase() === 'cantidad' && String(rawVal).includes('-')) {
+                    const m = String(rawVal).match(/(\d+)/);
+                    input.value = m ? m[1] : '';
+                } else {
+                    input.value = rawVal;
+                }
+                input.style.marginTop = '4px';
+                input.style.padding = '8px';
+                input.style.width = '100%';
+                input.style.border = '1px solid #ddd';
+                input.style.borderRadius = '4px';
+                input.style.boxSizing = 'border-box';
+                editarCamposDiv.appendChild(label);
+                editarCamposDiv.appendChild(input);
+            });
+
+            contextoEdicion = { id_inventario, id_categoria, index, id_registro, columns };
+            modalEditar.style.display = 'flex';
+        }
+
+        // Guardar edición
+        btnGuardarEdicion.onclick = async () => {
+            if (!contextoEdicion) return;
+            const { id_inventario, id_categoria, index, id_registro } = contextoEdicion;
+
+            const inputs = editarCamposDiv.querySelectorAll('input[name]');
+            const datos = {};
+            inputs.forEach(inp => datos[inp.name] = inp.value);
+
+            try {
+                await api('editarRegistro', { id_registro, datos });
+
+                if (registros[id_categoria] && registros[id_categoria][index]) {
+                    registros[id_categoria][index] = Object.assign(registros[id_categoria][index], datos);
+                }
+
+                contextoEdicion = null;
+                modalEditar.style.display = 'none';
+
+                await mostrarInventario(id_inventario, id_categoria, contextoActual.catNombre);
+                Swal.fire({ icon: 'success', title: 'Actualizado', timer: 1000, showConfirmButton: false });
+            } catch (err) {
+                console.error('Error:', err);
+            }
+        };
+
+        btnCancelarEdicion.onclick = () => {
+            contextoEdicion = null;
+            modalEditar.style.display = 'none';
+        };
+
+        // Imprimir ticket SOLO código de barras, tamaño 2.5cm x 5cm
+        function imprimirTicketDesdeRegistro(reg) {
+            // Buscar el campo identificador en el registro
+            let codeValue = '';
+            const inv = inventarios.find(i => i.id === contextoActual.id_inventario);
+            if (inv && inv.identificador && reg[inv.identificador]) {
+                codeValue = String(reg[inv.identificador]);
+            } else {
+                // fallback: primer campo con valor
+                codeValue = Object.values(reg).filter(v => v && v !== reg.id)[0] || `REG-${Date.now()}`;
+            }
+
+            printArea.innerHTML = '';
+            try {
+                const svgNS = 'http://www.w3.org/2000/svg';
+                const svg = document.createElementNS(svgNS, 'svg');
+                svg.setAttribute('width', '250'); // px
+                svg.setAttribute('height', '50'); // px
+                svg.style.width = '5cm';
+                svg.style.height = '2.5cm';
+                // displayValue: false para que NO imprima texto, solo barras
+                JsBarcode(svg, codeValue, { format: 'CODE128', displayValue: false, height: 50, width: 2 });
+                printArea.innerHTML = '';
+                printArea.appendChild(svg);
+                modalPrint.style.display = 'flex';
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo generar código' });
+            }
+        }
+
+        // Esperar a que el DOM esté completamente cargado
+        document.addEventListener('DOMContentLoaded', async function () {
+            console.log('DOM listo, inicializando...');
+
+            // Obtener referencias a elementos (hacerlo aquí, no antes)
+            const lista = document.getElementById('inventory-list');
+            const modal = document.getElementById('modalInventario');
+            const btnNuevo = document.getElementById('btnNuevoInventario');
+            const crearBtn = document.getElementById('crearInventario');
+            const contenedor = document.getElementById('tablaContainer');
+            const modalEditar = document.getElementById('modalEditar');
+            const editarCamposDiv = document.getElementById('editarCampos');
+            const btnGuardarEdicion = document.getElementById('guardarEdicion');
+            const btnCancelarEdicion = document.getElementById('cancelarEdicion');
+            const modalNuevoRegistro = document.getElementById('modalNuevoRegistro');
+            const nuevoCamposDiv = document.getElementById('nuevoCampos');
+            const btnGuardarNuevo = document.getElementById('guardarNuevo');
+            const btnCancelarNuevo = document.getElementById('cancelarNuevo');
+            const modalPrint = document.getElementById('modalPrint');
+            const printArea = document.getElementById('printArea');
+            const btnDoPrint = document.getElementById('doPrint');
+            const btnClosePrint = document.getElementById('closePrint');
+            const btnRegresar = document.getElementById('btnRegresar');
+
+            console.log('btnNuevo:', btnNuevo);
+            console.log('crearBtn:', crearBtn);
+            console.log('btnRegresar:', btnRegresar);
+
+            // Event listener para crear inventario - BOTÓN
+            if (btnNuevo) {
+                btnNuevo.addEventListener('click', function (e) {
+                    console.log('Click en btnNuevo');
+                    e.preventDefault();
+                    document.getElementById('nombreInventario').value = '';
+                    document.getElementById('identificadorInventario').value = '';
+                    document.getElementById('categoriaInventario').value = '';
+                    document.getElementById('camposInventario').value = '';
+                    modal.style.display = 'flex';
+                    setTimeout(() => document.getElementById('nombreInventario').focus(), 100);
+                });
+            } else {
+                console.error('btnNuevo no encontrado');
+            }
+
+            // Event listener para crear inventario - CONFIRMACIÓN
+            if (crearBtn) {
+                crearBtn.addEventListener('click', async function (e) {
+                    console.log('Click en crearBtn');
+                    e.preventDefault();
+                    const nombre = document.getElementById('nombreInventario').value.trim();
+                    const identificador = document.getElementById('identificadorInventario').value.trim();
+                    const categoria = document.getElementById('categoriaInventario').value.trim();
+                    let camposText = document.getElementById('camposInventario').value.trim();
+                    let campos = camposText ? camposText.split(',').map(s => s.trim()).filter(Boolean) : [];
+
+                    // Reordenar campos CORRECTAMENTE:
+                    // 1. Identificador SIEMPRE primero
+                    // 2. Cantidad SIEMPRE segundo (sin importar si el usuario lo ingresó)
+                    // 3. Resto después
+
+                    // Paso 1: Remover identificador y Cantidad de la lista si existen
+                    campos = campos.filter(c => {
+                        const cLower = String(c).toLowerCase();
+                        const idLower = String(identificador || '').toLowerCase();
+                        return cLower !== idLower && cLower !== 'cantidad';
+                    });
+
+                    // Paso 2: Construir nuevo array ordenado
+                    let camposOrdenados = [];
+
+                    // Primero: el identificador
+                    if (identificador) {
+                        camposOrdenados.push(identificador);
+                    }
+
+                    // Segundo: Cantidad (SIEMPRE, incluso si no estaba en los campos del usuario)
+                    camposOrdenados.push('Cantidad');
+
+                    // Tercero: el resto de campos
+                    camposOrdenados = camposOrdenados.concat(campos);
+
+                    campos = camposOrdenados;
+
+                    console.log('Campos reordenados:', campos);
+
+                    if (!nombre) {
+                        Swal.fire({ icon: 'error', title: 'Error', text: 'Nombre requerido' });
+                        return;
+                    }
+
+                    try {
+                        const res = await api('crearInventario', { nombre, identificador, categoria, campos });
+                        const newInv = res.inventario || { id: res.id, nombre, identificador };
+                        inventarios.unshift(newInv);
+                        categorias[newInv.id] = res.categoria ? [res.categoria] : [];
+                        if (res.categoria) {
+                            registros[res.categoria.id] = [];
+                        }
+                        modal.style.display = 'none';
+                        // Recargar la página para reflejar todos los cambios
+                        location.reload();
+                    } catch (err) {
+                        console.error('Error:', err);
+                    }
+                });
+            } else {
+                console.error('crearBtn no encontrado');
+            }
+
+            // Event listener para regresar - BOTÓN
+            if (btnRegresar) {
+                btnRegresar.addEventListener('click', function (e) {
+                    console.log('Click en btnRegresar');
+                    e.preventDefault();
+                    window.location.href = 'MainAdmin.php';
+                });
+            } else {
+                console.error('btnRegresar no encontrado');
+            }
+
+            // Toggle sidebar: ocultar/mostrar y transformar el botón regresar
+            const toggleSidebarBtn = document.getElementById('toggleSidebar');
+            if (toggleSidebarBtn) {
+                toggleSidebarBtn.addEventListener('click', () => {
+                    const sb = document.querySelector('.sidebar');
+                    const contentEl = document.querySelector('.content');
+                    if (!sb) return;
+                    const collapsed = sb.classList.toggle('collapsed');
+                    if (contentEl) contentEl.classList.toggle('expanded', collapsed);
+                    // transformar botón regresar: si está colapsado mostrar solo flecha
+                    const btnReg = document.getElementById('btnRegresar');
+                    if (btnReg) {
+                        if (collapsed) {
+                            btnReg.dataset.prevLabel = btnReg.textContent;
+                            btnReg.textContent = '←';
+                            btnReg.style.width = '40px';
+                            btnReg.title = 'Regresar';
+                        } else {
+                            if (btnReg.dataset.prevLabel) btnReg.textContent = btnReg.dataset.prevLabel;
+                            btnReg.style.width = '80%';
+                        }
+                    }
+                    // ajustar texto del botón toggle
+                    toggleSidebarBtn.textContent = collapsed ? '⇥ Mostrar barra' : '⇤ Ocultar barra';
+                });
+            }
+
+            // Cerrar modales al hacer click fuera
+            window.addEventListener('click', (e) => {
+                if (e.target === modal) modal.style.display = 'none';
+                if (e.target === modalEditar) modalEditar.style.display = 'none';
+                if (e.target === modalNuevoRegistro) modalNuevoRegistro.style.display = 'none';
+                if (e.target === modalPrint) modalPrint.style.display = 'none';
+            });
+
+            // Cerrar modales con Escape
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    modal.style.display = 'none';
+                    modalEditar.style.display = 'none';
+                    modalNuevoRegistro.style.display = 'none';
+                    modalPrint.style.display = 'none';
+                }
+            });
+
+            // Botones print
+            btnClosePrint.onclick = () => { printArea.innerHTML = ''; modalPrint.style.display = 'none'; };
+            btnDoPrint.onclick = () => {
+                try {
+                    // Imprimir solo el SVG que está en printArea: abrir nueva ventana con contenido mínimo
+                    const content = printArea.innerHTML || '';
+                    const w = window.open('', '_blank');
+                    w.document.write('<html><head><title>Ticket</title>');
+                    w.document.write('<style>body{margin:0;display:flex;align-items:center;justify-content:center;height:100vh}svg{width:5cm;height:2.5cm;}</style>');
+                    w.document.write('</head><body>');
+                    w.document.write(content);
+                    w.document.write('</body></html>');
+                    w.document.close();
+                    w.focus();
+                    setTimeout(() => { w.print(); w.close(); }, 300);
+                } catch (e) { console.warn(e); }
+            };
+
+            // Cerrar modales con data-close
+            document.addEventListener('click', function (e) {
+                const btn = e.target.closest('[data-close]');
+                if (btn) {
+                    const modalId = btn.getAttribute('data-close');
+                    if (modalId) document.getElementById(modalId).style.display = 'none';
+                }
+            });
+
+            // --- Handlers para Retiro / Devolución / Historial ---
+            const modalRetiro = document.getElementById('modalRetiro');
+            const guardarRetiroBtn = document.getElementById('guardarRetiro');
+            const modalDevolucion = document.getElementById('modalDevolucion');
+            const buscarDevolBtn = document.getElementById('buscarDevol');
+            const guardarDevolucionBtn = document.getElementById('guardarDevolucion');
+            const modalHistorialEl = document.getElementById('modalHistorial');
+            const printHistorialBtn = document.getElementById('printHistorial');
+
+            if (guardarRetiroBtn) {
+                guardarRetiroBtn.addEventListener('click', async () => {
+                    try {
+                        const id_categoria = modalRetiro.dataset.id_categoria ? parseInt(modalRetiro.dataset.id_categoria) : 0;
+                        const articulo_id = modalRetiro.dataset.articulo_id ? parseInt(modalRetiro.dataset.articulo_id) : 0;
+                        const no_colaborador = document.getElementById('retiro_colaborador').value.trim();
+                        const cantidad = parseInt(document.getElementById('retiro_cantidad').value) || 0;
+                        const observaciones = document.getElementById('retiro_observaciones').value.trim();
+                        if (!id_categoria || !articulo_id) throw new Error('No se detectó artículo seleccionado');
+                        if (!cantidad || cantidad <= 0) throw new Error('Ingresa una cantidad válida');
+
+                        const res = await api('create_retiro', { id_categoria, articulo_id, no_colaborador, cantidad, observaciones });
+                        if (res && res.codigo_retiro) {
+                            document.getElementById('retiro_codigo').value = res.codigo_retiro;
+                            Swal.fire({ icon: 'success', title: 'Retiro registrado', text: 'Código: ' + res.codigo_retiro });
+                            // guardar contexto para restaurar después del reload
+                            try {
+                                const ctx = {
+                                    id_inventario: contextoActual.id_inventario,
+                                    id_categoria: parseInt(modalRetiro.dataset.id_categoria) || contextoActual.id_categoria,
+                                    catNombre: contextoActual.catNombre,
+                                    selected_registro_id: parseInt(modalRetiro.dataset.articulo_id) || null,
+                                    scrollTop: (document.documentElement.scrollTop || document.body.scrollTop || 0)
+                                };
+                                sessionStorage.setItem('inv_context', JSON.stringify(ctx));
+                            } catch (e) { /* ignore storage errors */ }
+                            // cerrar modal y recargar la página para que todo se actualice; luego se restaurará el contexto
+                            document.getElementById('modalRetiro').style.display = 'none';
+                            location.reload();
+                        }
+                    } catch (e) {
+                        console.error(e);
+                    }
+                });
+            }
+
+            if (buscarDevolBtn) {
+                buscarDevolBtn.addEventListener('click', async () => {
+                    try {
+                        const codigo = document.getElementById('devol_codigo').value.trim();
+                        if (!codigo) return Swal.fire({ icon: 'warning', title: 'Ingrese código' });
+                        const row = await api('get_retiro', { codigo_retiro: codigo });
+                        document.getElementById('devol_fecha_retiro').value = row.fecha_retiro || '';
+                        // colocar fecha_devolucion por defecto ahora
+                        document.getElementById('devol_fecha_devolucion').value = new Date().toISOString().slice(0, 16);
+                        document.getElementById('devol_colaborador').value = row.no_colaborador || '';
+                        document.getElementById('devol_inventario').value = (row.inventario || '') + ' / ' + (row.categoria || '');
+                        // Mostrar el identificador del producto (ej: código de barras) en lugar del ID numérico
+                        const articuloId = row.articulo_id || '';
+                        let displayVal = articuloId;
+                        const found = findRecordAndInventoryByArticuloId(articuloId);
+                        if (found && found.record && found.inventory) {
+                            displayVal = getRecordIdentifier(found.record, found.inventory);
+                        }
+                        document.getElementById('devol_articulo_id').value = displayVal;
+                        document.getElementById('devol_cantidad').value = row.cantidad || '';
+                    } catch (e) {
+                        console.error(e);
+                    }
+                });
+            }
+
+            if (guardarDevolucionBtn) {
+                guardarDevolucionBtn.addEventListener('click', async () => {
+                    try {
+                        const codigo = document.getElementById('devol_codigo').value.trim();
+                        if (!codigo) return Swal.fire({ icon: 'warning', title: 'Ingrese código' });
+                        const fecha_devolucion = document.getElementById('devol_fecha_devolucion').value ? (new Date(document.getElementById('devol_fecha_devolucion').value)).toISOString().slice(0, 19).replace('T', ' ') : '';
+                        const cantidad = parseInt(document.getElementById('devol_cantidad').value) || null;
+                        const observaciones = document.getElementById('devol_observaciones').value.trim();
+                        await api('create_devolucion', { codigo_retiro: codigo, fecha_devolucion, cantidad, observaciones });
+                        Swal.fire({ icon: 'success', title: 'Devolución registrada' });
+                        modalDevolucion.style.display = 'none';
+                        try {
+                            await mostrarInventario(contextoActual.id_inventario, parseInt(document.getElementById('devol_articulo_id').value) ? parseInt(contextoActual.id_categoria) : contextoActual.id_categoria, contextoActual.catNombre);
+                        } catch (e) {
+                            // ignore
+                        }
+                    } catch (e) {
+                        console.error(e);
+                    }
+                });
+            }
+
+            if (printHistorialBtn) {
+                printHistorialBtn.addEventListener('click', () => {
+                    const content = document.getElementById('historialBody').innerHTML;
+                    const w = window.open('', '_blank');
+                    w.document.write('<html><head><title>Historial</title>');
+                    w.document.write('<style>table{border-collapse:collapse;width:100%}table th,table td{border:1px solid #ddd;padding:6px}</style>');
+                    w.document.write('</head><body>');
+                    w.document.write('<h2>Historial de retiros y devoluciones</h2>');
+                    w.document.write(content);
+                    w.document.write('</body></html>');
+                    w.document.close();
+                    w.focus();
+                    setTimeout(() => { w.print(); w.close(); }, 600);
+                });
+            }
+
+            // Guardar nuevo registro
+            btnGuardarNuevo.onclick = async () => {
+                if (!contextoNuevo) return;
+                const { id_inventario, id_categoria, columns } = contextoNuevo;
+
+                const inputs = nuevoCamposDiv.querySelectorAll('input[name]');
+                const datos = {};
+                inputs.forEach(inp => datos[inp.name] = inp.value);
+
+                try {
+                    const res = await api('crearRegistro', { id_categoria, datos });
+
+                    if (!registros[id_categoria]) registros[id_categoria] = [];
+                    registros[id_categoria].push(Object.assign({ id: res.id_registro }, datos));
+
+                    contextoNuevo = null;
+                    modalNuevoRegistro.style.display = 'none';
+
+                    await mostrarInventario(id_inventario, id_categoria, contextoActual.catNombre);
+                    Swal.fire({ icon: 'success', title: 'Registro creado', timer: 1000, showConfirmButton: false });
+                } catch (err) {
+                    console.error('Error:', err);
+                }
+            };
+
+            btnCancelarNuevo.onclick = () => {
+                contextoNuevo = null;
+                modalNuevoRegistro.style.display = 'none';
+            };
+
+            // Guardar edición
+            btnGuardarEdicion.onclick = async () => {
+                if (!contextoEdicion) return;
+                const { id_inventario, id_categoria, index, id_registro } = contextoEdicion;
+
+                const inputs = editarCamposDiv.querySelectorAll('input[name]');
+                const datos = {};
+                inputs.forEach(inp => datos[inp.name] = inp.value);
+
+                try {
+                    await api('editarRegistro', { id_registro, datos });
+
+                    if (registros[id_categoria] && registros[id_categoria][index]) {
+                        registros[id_categoria][index] = Object.assign(registros[id_categoria][index], datos);
+                    }
+
+                    contextoEdicion = null;
+                    modalEditar.style.display = 'none';
+
+                    await mostrarInventario(id_inventario, id_categoria, contextoActual.catNombre);
+                    Swal.fire({ icon: 'success', title: 'Actualizado', timer: 1000, showConfirmButton: false });
+                } catch (err) {
+                    console.error('Error:', err);
+                }
+            };
+
+            btnCancelarEdicion.onclick = () => {
+                contextoEdicion = null;
+                modalEditar.style.display = 'none';
+            };
+
+            // Cargar datos al iniciar y restaurar contexto si existe
+            await cargarDatos();
+            try {
+                const ctxStr = sessionStorage.getItem('inv_context');
+                if (ctxStr) {
+                    const ctx = JSON.parse(ctxStr);
+                    if (ctx && ctx.id_inventario && ctx.id_categoria) {
+                        // mostrar la misma vista
+                        await mostrarInventario(ctx.id_inventario, ctx.id_categoria, ctx.catNombre || '');
+                        // intentar seleccionar/mostrar el registro si existe
+                        if (ctx.selected_registro_id) {
+                            // buscar fila con data-id
+                            const row = document.querySelector(`tr[data-id="${ctx.selected_registro_id}"]`);
+                            if (row) {
+                                row.scrollIntoView({ behavior: 'auto', block: 'center' });
+                                const cb = row.querySelector('.row-selector');
+                                if (cb) cb.checked = true;
+                            }
+                        }
+                        // restaurar scroll
+                        if (ctx.scrollTop) window.scrollTo(0, ctx.scrollTop);
+                    }
+                    sessionStorage.removeItem('inv_context');
+                }
+            } catch (e) {
+                console.warn('No se pudo restaurar contexto:', e);
+            }
+        });
+    </script>
+</body>
+
+</html>

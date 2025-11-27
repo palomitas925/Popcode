@@ -1,0 +1,143 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #18bdff;
+  color: #333;
+}
+
+/* Contenedor principal */
+.contenedor {
+  display: flex;
+  justify-content: space-between;
+  padding: 40px;
+  gap: 30px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* Paneles */
+.panel-izquierdo,
+.panel-derecho {
+  width: 48%;
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Título */
+.panel-izquierdo h1 {
+  font-size: 32px;
+  color: #0e96cc;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Etiquetas */
+label {
+  font-weight: bold;
+  color: #0e96cc;
+  display: block;
+  margin-top: 15px;
+}
+
+/* Campos de texto */
+input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  border: 2px solid #0e96cc;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus {
+  border-color: #1aaff5;
+  outline: none;
+}
+
+/* Focos de estado */
+.focos {
+  display: flex;
+  justify-content: center;
+  gap: 100px;
+  margin: 100px 0;
+}
+
+.foco {
+  width: 100px;
+  height: 100px;
+  border-radius: 100%;
+  background: gray;
+  border: 2px solid #ccc;
+  transition: background-color 0.3s ease;
+}
+
+.foco.verde {
+  background-color: #28a745;
+}
+
+.foco.rojo {
+  background-color: #dc3545;
+}
+
+/* Botones */
+.botones {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.botones button {
+  padding: 12px 24px;
+  margin: 0 10px;
+  background-color: #0e96cc;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.botones button:hover {
+  background-color: #0b7bb5;
+  transform: scale(1.05);
+}
+
+/* Imagen */
+.imagen {
+  text-align: center;
+  margin-top: 100px;
+}
+
+.imagen img {
+  border: 2px solid #0e96cc;
+  border-radius: 10px;
+  max-width: 100%;
+  height: auto;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.imagen p {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #666;
+}
+.logo-inferior {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  width: 80px;
+  height: auto;
+  z-index: 999;
+  opacity: 0.9;
+}
+.logo-esquina {
+  width: 100px; /* Ajusta el tamaño deseado */
+  height: auto; /* Mantiene la proporción */
+  position: absolute; /*  se mantiene en una esquina */
+  top: 10px;
+  left: 10px;
+}
